@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// For local development, use SQLite
+// For production, use PostgreSQL, MySQL, or another supported database
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// To use PostgreSQL in production, comment out the above datasource and uncomment this:
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  location      String?
+  businessUnit  String?
+  role          String?
+  isAdmin       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  userSkills    UserSkill[]
+}
+
+model Skill {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  category    String?
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userSkills  UserSkill[]
+  roleSkills  RoleSkill[]
+}
+
+model UserSkill {
+  id        String   @id @default(cuid())
+  userId    String
+  skillId   String
+  level     Int      @default(1) // 1-5 skill proficiency level
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+}
+
+model Role {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  roleSkills  RoleSkill[]
+}
+
+model RoleSkill {
+  id        String   @id @default(cuid())
+  roleId    String
+  skillId   String
+  importance Int      @default(3) // 1-5 importance level
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, skillId])
+}
