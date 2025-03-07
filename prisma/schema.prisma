@@ -10,16 +10,16 @@ generator client {
 
 // For local development, use SQLite
 // For production, use PostgreSQL, MySQL, or another supported database
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
+//datasource db {
+//  provider = "sqlite"
+//  url      = env("DATABASE_URL")
+//}
 
 // To use PostgreSQL in production, comment out the above datasource and uncomment this:
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
+datasource db {
+   provider = "postgresql"
+   url      = env("DATABASE_URL")
+ }
 
 model User {
   id            String    @id @default(cuid())
